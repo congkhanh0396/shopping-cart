@@ -6,11 +6,14 @@ var logger = require('morgan');
 var expressHbs = require('express-handlebars');
 var mongoose = require('mongoose');
 var indexRouter = require('./routes/index');
-
+var session = require('express-session');
+var port = 3000;
 var app = express();
 
 // connect to the database
-mongoose.connect('mongodb://localhost/shopping');
+
+mongoose.connect('mongodb://localhost:27017/shopping', { useNewUrlParser: true });
+
 
 // view engine setup
 app.engine('.hbs', expressHbs({defaultLayout: 'layout', extname: '.hbs'}));
@@ -23,7 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(session({secret: 'mysupersecret', resave : false, saveUninitialized: false}));
 app.use('/', indexRouter);
 
 
@@ -42,5 +45,9 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+app.listen(port, function(){
+  console.log('server is running in port:', port);
+})
 
 module.exports = app;
