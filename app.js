@@ -9,7 +9,7 @@ var indexRouter = require('./routes/index');
 var session = require('express-session');
 var passport = require('passport');
 var flash = require('connect-flash');
-
+var validator = require('express-validator');
 var port = 3000;
 
 
@@ -24,6 +24,7 @@ app.set('view engine', 'hbs');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(validator());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret: 'mysupersecret', resave : false, saveUninitialized: false}));
