@@ -7,18 +7,18 @@ var expressHbs = require('express-handlebars');
 var mongoose = require('mongoose');
 var indexRouter = require('./routes/index');
 var session = require('express-session');
+var passport = require('passport');
+var flash = require('connect-flash');
+
 var port = 3000;
+
+
+
 var app = express();
-
-// connect to the database
-
 mongoose.connect('mongodb://localhost:27017/shopping', { useNewUrlParser: true });
-
-
-// view engine setup
+require('./config/passport'); 
 app.engine('.hbs', expressHbs({defaultLayout: 'layout', extname: '.hbs'}));
 app.set('view engine', 'hbs');
-// app.set('views', path.join(__dirname, 'views'));
 
 
 app.use(logger('dev'));
@@ -27,7 +27,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret: 'mysupersecret', resave : false, saveUninitialized: false}));
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
 app.use('/', indexRouter);
+
 
 
 // catch 404 and forward to error handler
