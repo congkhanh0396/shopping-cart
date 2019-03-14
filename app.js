@@ -32,6 +32,12 @@ app.use(session({secret: 'mysupersecret', resave : false, saveUninitialized: fal
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(function(req, res, next) {
+  res.locals.login = req.isAuthenticated();
+  next();
+});
+
 app.use('/', indexRouter);
 app.use('/user', userRouters);
 

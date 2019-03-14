@@ -6,6 +6,21 @@ var passport = require('passport');
 var csrfProtection = csrf({ cookie: true });
 
 router.use(csrfProtection);
+
+router.get('/profile', isLoggedIn, function(req, res, next){
+    res.render('user/profile');
+});
+
+
+router.get('/logout', isLoggedIn, function (req, res, next) {
+    req.logout();
+    res.redirect('/');
+});
+
+router.use('/', notLoggedIn, function(req, res, next){
+    next();
+});
+
 /* GET login page. */
 router.get('/signup', function(req, res, next){
     var messages = req.flash('error');
@@ -29,17 +44,19 @@ router.post('/signin',passport.authenticate('local.signin',{
   failureFlash : true  
 }));
 
-router.get('/profile', isLoggedIn, function(req, res, next){
-  res.render('user/profile');
-});
 
-router.get('/logout', function(req, res, next){
-    req.logout();
-    res.redirect('/');
-});
+
+
 
 function isLoggedIn(req, res, next){
     if(req.isAuthenticated()){
+        return next();
+    }
+    res.redirect('/');
+}
+
+function notLoggedIn(req, res, next){
+    if(!req.isAuthenticated()){
         return next();
     }
     res.redirect('/');
