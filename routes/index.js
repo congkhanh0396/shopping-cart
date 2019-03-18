@@ -3,6 +3,7 @@ var router = express.Router();
 var csrf = require('csurf');
 var Product = require('../models/product');
 var Cart = require('../models/cart');
+var Order = require('../models/order');
 /* GET home page. */
 router.get('/', function(req, res, next) {
   var successMsg = req.flash('success')[0];
@@ -66,9 +67,18 @@ router.post('/checkout', async function(req, res, next){
         req.flash('error', err.message);
         return res.redirect('/checkout');
       }
-      req.flash('success', 'Successful bought product!');
+      var order = new Order({
+        user: req.user,
+        cart: cart,
+        address: req.body.address,
+        name: req.body.name,
+        paymentId: charge.id
+    });
+    order.save(function(err, result) {
+      req.flash('success', 'Successfully bought product!');
       req.session.cart = null;
       res.redirect('/');
+  });
   });
 });
 
