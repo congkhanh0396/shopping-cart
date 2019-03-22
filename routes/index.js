@@ -32,6 +32,7 @@ router.get('/add-to-cart/:id', function(req, res, next){
   });
 });
 
+
 router.get('/shopping-cart', function(req, res, next){
   if(!req.session.cart){
      return res.render('shop/shopping-cart', {products : null});
@@ -42,7 +43,7 @@ router.get('/shopping-cart', function(req, res, next){
   }
 });
 
-router.get('/checkout', function(req, res, next){
+router.get('/checkout',isLoggedIn, function(req, res, next){
   if(!req.session.cart){
     return res.redirect('shop/shopping-cart');
   }
@@ -51,7 +52,7 @@ router.get('/checkout', function(req, res, next){
   res.render('shop/checkout', {total: cart.totalPrice, errMsg: errMsg, noError: !errMsg});
 });
 
-router.post('/checkout', async function(req, res, next){
+router.post('/checkout',isLoggedIn, async function(req, res, next){
   if(!req.session.cart){
     return res.redirect('shop/shopping-cart');
   }
@@ -85,3 +86,10 @@ router.post('/checkout', async function(req, res, next){
 
 module.exports = router;
 
+function isLoggedIn(req, res, next){
+  if(req.isAuthenticated()){
+      return next();
+  }
+  req.session.oldUrl = req.url;
+  res.redirect('/user/signin');
+}
